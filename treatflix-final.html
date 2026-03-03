@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Treatflix - Rent Netflix for one day</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --red: #e50914;
+    --dark: #0a0a0a;
+    --card: #141414;
+    --text: #e5e5e5;
+    --muted: #888;
+    --gold: #f5c518;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px;
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid #1f1f1f;
+  }
+  nav .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--red); letter-spacing: 2px; }
+  nav ul { list-style: none; display: flex; gap: 28px; }
+  nav ul a { color: var(--text); text-decoration: none; font-size: 14px; opacity: 0.8; transition: opacity .2s; }
+  nav ul a:hover { opacity: 1; color: var(--red); }
+
+  /* HERO */
+  .hero {
+    text-align: center; padding: 100px 20px 80px;
+    background: radial-gradient(ellipse at 50% 0%, #2a0000 0%, var(--dark) 70%);
+  }
+  .hero img { width: 180px; margin-bottom: 24px; }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 8vw, 90px); letter-spacing: 4px; line-height: 1; color: #fff; }
+  .hero h1 span { color: var(--red); }
+  .hero p { margin: 16px auto 32px; max-width: 480px; font-size: 17px; color: var(--muted); }
+  .btn-primary {
+    display: inline-block; padding: 14px 40px; background: var(--red);
+    color: #fff; font-weight: 600; font-size: 15px; border-radius: 4px;
+    text-decoration: none; letter-spacing: 1px; transition: background .2s, transform .2s;
+  }
+  .btn-primary:hover { background: #f40612; transform: scale(1.04); }
+  .stars { margin-top: 24px; font-size: 22px; }
+
+  /* STATS */
+  .stats {
+    display: flex; justify-content: center; gap: 60px; flex-wrap: wrap;
+    padding: 48px 20px; border-top: 1px solid #1f1f1f; border-bottom: 1px solid #1f1f1f;
+  }
+  .stat-item { text-align: center; }
+  .stat-item .num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--red); }
+  .stat-item .label { font-size: 13px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* WHY */
+  .section { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 58px); letter-spacing: 2px; margin-bottom: 32px; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .feature-card {
+    background: var(--card); border: 1px solid #1f1f1f; border-radius: 8px;
+    padding: 28px; transition: border-color .2s;
+  }
+  .feature-card:hover { border-color: var(--red); }
+  .feature-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* PRICING */
+  #pricing { padding: 80px 20px; background: #0d0d0d; }
+  #pricing .inner { max-width: 1000px; margin: 0 auto; text-align: center; }
+  #pricing .section-label { display: block; }
+  .plans { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 48px; }
+  .plan-card {
+    background: var(--card); border: 1px solid #1f1f1f; border-radius: 12px;
+    padding: 36px 28px; width: 280px; text-align: left; position: relative;
+    transition: transform .2s, border-color .2s;
+  }
+  .plan-card:hover { transform: translateY(-6px); border-color: #333; }
+  .plan-card.featured { border-color: var(--red); }
+  .plan-card.featured::before {
+    content: "BEST DEAL"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--red); color: #fff; font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; padding: 4px 14px; border-radius: 20px;
+  }
+  .plan-name { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .plan-price { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: #fff; line-height: 1; }
+  .plan-price span { font-size: 20px; }
+  .plan-period { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .plan-original { font-size: 13px; color: var(--muted); text-decoration: line-through; margin-bottom: 20px; }
+  .plan-save { font-size: 12px; color: #4caf50; font-weight: 600; margin-bottom: 20px; }
+  .plan-features { list-style: none; margin-bottom: 28px; }
+  .plan-features li { font-size: 14px; color: var(--muted); padding: 6px 0; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; gap: 8px; }
+  .plan-features li::before { content: "✓"; color: var(--red); font-weight: 700; }
+  .plan-btn {
+    display: block; text-align: center; padding: 12px; background: var(--red);
+    color: #fff; font-weight: 600; border-radius: 4px; text-decoration: none;
+    font-size: 14px; transition: background .2s;
+  }
+  .plan-btn:hover { background: #f40612; }
+  .guarantee { margin-top: 36px; font-size: 13px; color: var(--muted); }
+  .guarantee span { color: #4caf50; font-weight: 600; }
+
+  /* TESTIMONIALS */
+  #reviews { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 40px; }
+  .testimonial {
+    background: var(--card); border: 1px solid #1f1f1f; border-radius: 8px; padding: 20px;
+  }
+  .testimonial .handle { font-size: 13px; color: var(--red); font-weight: 600; margin-bottom: 6px; }
+  .testimonial .text { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+  .testimonial .stars { font-size: 14px; }
+
+  /* FAQ */
+  #faq { padding: 80px 20px; background: #0d0d0d; }
+  #faq .inner { max-width: 760px; margin: 0 auto; }
+  .faq-item { border-bottom: 1px solid #1f1f1f; padding: 20px 0; }
+  .faq-q { font-size: 15px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; }
+  .faq-q::after { content: "+"; color: var(--red); font-size: 20px; }
+  .faq-a { font-size: 14px; color: var(--muted); line-height: 1.7; margin-top: 12px; }
+
+  /* RULES */
+  #rules { padding: 80px 20px; max-width: 760px; margin: 0 auto; }
+  .rules-list { list-style: none; margin-top: 20px; }
+  .rules-list li { padding: 10px 0; font-size: 14px; color: var(--muted); border-bottom: 1px solid #1a1a1a; }
+  .rules-list li::before { content: "❌ "; }
+
+  /* FOOTER */
+  footer {
+    background: #050505; border-top: 1px solid #1a1a1a;
+    padding: 40px 40px; display: flex; flex-wrap: wrap;
+    justify-content: space-between; align-items: center; gap: 20px;
+  }
+  footer .logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--red); }
+  footer p { font-size: 13px; color: var(--muted); }
+  footer .socials { display: flex; gap: 16px; }
+  footer .socials a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+  footer .socials a:hover { color: var(--red); }
+  footer nav ul { display: flex; gap: 20px; flex-wrap: wrap; }
+  footer nav ul li { list-style: none; }
+  footer nav ul a { font-size: 13px; color: var(--muted); text-decoration: none; }
+  footer nav ul a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Treatflix</div>
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <img src="https://treatflix.com/wp-content/uploads/2023/11/treatflix-logo-1-1.png" alt="Treatflix Logo"/>
+  <h1>NOW <span>TREATFLIX</span><br/>AND CHILL</h1>
+  <p>Get a Netflix account &amp; password for 24 hours at the price of just ₹10</p>
+  <a href="https://treatflix.com/ott" class="btn-primary">CLICK HERE TO PURCHASE</a>
+  <div class="stars">⭐️⭐️⭐️⭐️⭐️</div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><div class="num">30,000</div><div class="label">Signups</div></div>
+  <div class="stat-item"><div class="num">808</div><div class="label">Reviews</div></div>
+  <div class="stat-item"><div class="num">5,000</div><div class="label">Sales</div></div>
+  <div class="stat-item"><div class="num">1+</div><div class="label">Yr Exp</div></div>
+</div>
+
+<!-- WHY TREATFLIX -->
+<section class="section">
+  <div class="section-label">Why Choose Us</div>
+  <div class="section-title">Why Choose Treatflix?</div>
+  <div class="features-grid">
+    <div class="feature-card"><h3>💸 Pocket-Friendly</h3><p>Enjoy Netflix for just ₹10 per day — ultra-affordable entertainment for everyone.</p></div>
+    <div class="feature-card"><h3>📅 Convenient Rental</h3><p>Choose your preferred date for a one-day Netflix experience with instant delivery.</p></div>
+    <div class="feature-card"><h3>🎬 Perfect for Occasions</h3><p>Movie nights, binge sessions, or just a lazy day — Treatflix fits every occasion.</p></div>
+    <div class="feature-card"><h3>🖥️ Quality Options</h3><p>Select 4K+HDR streaming quality for a truly immersive experience on any device.</p></div>
+    <div class="feature-card"><h3>⚡ Instant Delivery</h3><p>Once payment is confirmed, access is granted immediately. No delays.</p></div>
+    <div class="feature-card"><h3>🔄 100% Refund</h3><p>Something went wrong? We offer a full no-risk money-back guarantee.</p></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="inner">
+    <div class="section-label">Pricing</div>
+    <div class="section-title" style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,58px);letter-spacing:2px;">Simple Pricing Plans</div>
+    <p style="color:var(--muted);font-size:15px;">Straightforward pricing designed for every budget.</p>
+
+    <div class="plans">
+
+      <!-- ONE DAY — UPDATED -->
+      <div class="plan-card featured">
+        <div class="plan-name">One Day Plan</div>
+        <div class="plan-price"><span>₹</span>10</div>
+        <div class="plan-period">/day</div>
+        <div class="plan-original">₹35</div>
+        <div class="plan-save">Save 71%</div>
+        <ul class="plan-features">
+          <li>Single user account</li>
+          <li>4K + HDR</li>
+          <li>Mobile</li>
+          <li>Laptop</li>
+          <li>Tab</li>
+          <li>TV</li>
+          <li>1 Screen at a time</li>
+        </ul>
+        <a href="https://treatflix.com/ott" class="plan-btn">Get One Day</a>
+      </div>
+
+      <!-- WEEKLY -->
+      <div class="plan-card">
+        <div class="plan-name">Weekly Plan</div>
+        <div class="plan-price"><span>₹</span>79</div>
+        <div class="plan-period">/weekly</div>
+        <div class="plan-original">₹140</div>
+        <div class="plan-save">Save 50%</div>
+        <ul class="plan-features">
+          <li>Single user account</li>
+          <li>4K + HDR quality</li>
+          <li>Mobile</li>
+          <li>Laptop</li>
+          <li>Tab</li>
+          <li>TV</li>
+          <li>1 Screen at a time</li>
+        </ul>
+        <a href="https://treatflix.com/ott" class="plan-btn">Get One Week</a>
+      </div>
+
+      <!-- MONTHLY -->
+      <div class="plan-card">
+        <div class="plan-name">Monthly Plan</div>
+        <div class="plan-price"><span>₹</span>250</div>
+        <div class="plan-period">/monthly</div>
+        <div class="plan-original">₹500</div>
+        <div class="plan-save">Save 50%</div>
+        <ul class="plan-features">
+          <li>Single user account</li>
+          <li>4K + HDR quality</li>
+          <li>Mobile</li>
+          <li>Laptop</li>
+          <li>Tab</li>
+          <li>TV</li>
+          <li>1 Screen at a time</li>
+        </ul>
+        <a href="https://treatflix.com/ott" class="plan-btn">Get One Month</a>
+      </div>
+
+    </div>
+    <p class="guarantee">✅ <span>100% no-risk money back guarantee</span></p>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="reviews">
+  <div class="section-label">Testimonials</div>
+  <div class="section-title">What People Are Saying</div>
+  <div class="testimonials-grid">
+    <div class="testimonial"><div class="handle">@himanshutayal8030</div><div class="text">BHAI GREAT THIS WORKS LOVE YOU BROTHER VERY GOOD I CAN NOT EVEN EXPRESS MY FEELINGS TO YOU NOW</div><div class="stars">⭐️⭐️⭐️⭐️⭐️</div></div>
+    <div class="testimonial"><div class="handle">@RanaRana-ww9vu</div><div class="text">Amazing bruh… It's working!</div><div class="stars">⭐️⭐️⭐️⭐️⭐️</div></div>
+    <div class="testimonial"><div class="handle">@SaiTeja-ng4gn</div><div class="text">Thank you brother</div><div class="stars">⭐️⭐️⭐️⭐️⭐️</div></div>
+    <div class="testimonial"><div class="handle">@sunilvadhiyari9556</div><div class="text">Thank you brother</div><div class="stars">⭐️⭐️⭐️⭐️⭐️</div></div>
+    <div class="testimonial"><div class="handle">@arfacts5214</div><div class="text">Thanks very much love you bro</div><div class="stars">⭐️⭐️⭐️⭐️⭐️</div></div>
+    <div class="testimonial"><div class="handle">@medicosahiba9175</div><div class="text">Wow… thank u so much it really worked</div><div class="stars">⭐️⭐️⭐️⭐️⭐️</div></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="inner">
+    <div class="section-label">FAQ</div>
+    <div class="section-title" style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,58px);letter-spacing:2px;">Frequently Asked Questions</div>
+    <div class="faq-item"><div class="faq-q">Can I choose any date for my rental?</div><div class="faq-a">Absolutely! Pick any day that suits your schedule.</div></div>
+    <div class="faq-item"><div class="faq-q">Is it available for new Netflix releases?</div><div class="faq-a">Yes, Treatflix provides access to all the latest Netflix content.</div></div>
+    <div class="faq-item"><div class="faq-q">What devices are compatible with Treatflix?</div><div class="faq-a">Treatflix is compatible with smartphones, tablets, laptops, and smart TVs.</div></div>
+    <div class="faq-item"><div class="faq-q">Is my payment information secure?</div><div class="faq-a">Yes, we use secure payment gateways to ensure a safe and reliable transaction process.</div></div>
+    <div class="faq-item"><div class="faq-q">How soon can I access Netflix after payment?</div><div class="faq-a">Once your payment is confirmed, you'll gain instant access for 24 hours.</div></div>
+    <div class="faq-item"><div class="faq-q">Can I use Treatflix on multiple devices simultaneously?</div><div class="faq-a">Treatflix allows 1 screen at a time as per the shared account policy.</div></div>
+  </div>
+</section>
+
+<!-- RULES -->
+<section id="rules">
+  <div class="section-label">Community</div>
+  <div class="section-title">Community Rules</div>
+  <p style="color:var(--muted);font-size:14px;margin-bottom:8px;">⚠️ Breaking rules will lead to a <strong>permanent ban with No Refund.</strong></p>
+  <ul class="rules-list">
+    <li>Do Not Change login Email/Password.</li>
+    <li>Account payment info hacking is illegal.</li>
+    <li>Do Not Share your login id/password with others.</li>
+    <li>Do Not Play on more than one device at a time.</li>
+    <li>Do not update plan — your account will be banned.</li>
+    <li>Do NOT set any PIN restriction or Lock on profile.</li>
+  </ul>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="logo">Treatflix</div>
+    <p>© Copyright 2026 Treatflix · All rights reserved</p>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="https://treatflix.com/Contactus.php">Contact Us</a></li>
+      <li><a href="https://treatflix.com/Terms&Conditions.php">Terms &amp; Conditions</a></li>
+      <li><a href="https://treatflix.com/PrivacyPolicy.php">Privacy Policy</a></li>
+      <li><a href="https://treatflix.com/Cancellation&RefundPolicy.php">Refund Policy</a></li>
+    </ul>
+  </nav>
+  <div class="socials">
+    <a href="https://youtube.com/@treatflix">YouTube</a>
+    <a href="https://instagram.com/treatflix">Instagram</a>
+    <a href="https://wa.me/919456558803">WhatsApp</a>
+  </div>
+</footer>
+
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+// ============================================================
+// SECTION 1: Fetch & Display Orders + Payment Flow
+// ============================================================
+$(document).ready(function () {
+
+    function fetchOrders() {
+        var userId = $('#user_id').val();
+        $.ajax({
+            url: 'backend/fetch_orders.php',
+            type: 'POST',
+            data: { user_id: userId },
+            dataType: 'json',
+            success: function (data) {
+                var orderList = $('#orderList');
+                orderList.empty();
+                if (data.length > 0) {
+                    data.forEach(function (order, index) {
+                        var buttons;
+                        if (index === 0) {
+                            buttons =
+                                '<button class="pay-now-btn" data-id="' + order.id + '" data-discounted_rate="' + order.discounted_rate + '" data-order_date="' + order.order_date + '">Pay Now</button>&nbsp;&nbsp;' +
+                                '<button class="payment-done-btn" data-id="' + order.id + '" data-discounted_rate="' + order.discounted_rate + '" data-order_date="' + order.order_date + '">Payment Done</button><br>' +
+                                '<a href="https://wa.me/917017414946?text=*Order%20ID:*%20' + order.id + '%0A*OTT%20Plan:*%20' + order.ott_plan + '%0A*discounted_rate:*%20' + order.discounted_rate + '%0A*Date:*%20' + order.order_date + '%0A*Request%20To%20Make%20a%20Refund*" target="_blank" class="btn btn-success">Request Refund (WhatsApp)</a>&nbsp;&nbsp;' +
+                                '<a href="https://treatflix.com/ott/refund.php?order_id=' + order.id + '" class="btn btn-outline-info">Submit Refund Form</a><hr>';
+                        } else {
+                            buttons =
+                                '<a href="https://wa.me/917017414946?text=*Order%20ID:*%20' + order.id + '%0A*OTT%20Plan:*%20' + order.ott_plan + '%0A*discounted_rate:*%20' + order.discounted_rate + '%0A*Date:*%20' + order.order_date + '%0A*Request%20To%20Make%20a%20Refund*" target="_blank" class="btn btn-success">Request Refund (WhatsApp)</a>&nbsp;&nbsp;' +
+                                '<a href="https://treatflix.com/ott/refund.php?order_id=' + order.id + '" class="btn btn-outline-info">Submit Refund Form</a>';
+                        }
+                        orderList.append(
+                            '<li><strong>Order ID:</strong> ' + order.id +
+                            ', <strong>OTT Plan:</strong> ' + order.ott_plan +
+                            ', <strong>discounted_rate:</strong> ' + order.discounted_rate +
+                            ', <strong>Date:</strong> ' + order.order_date +
+                            '<br>' + buttons + '</li>'
+                        );
+                    });
+                } else {
+                    orderList.append('<li>No orders available.</li>');
+                }
+
+                $('.pay-now-btn').click(function (e) {
+                    e.preventDefault();
+                    var orderId = $(this).data('id');
+                    var discounted_rate = $(this).data('discounted_rate');
+                    var orderDate = $(this).data('order_date');
+                    $('#find-payment-button').data('discounted_rate', discounted_rate);
+                    $('#find-payment-button').data('order_date', orderDate);
+                    $('#find-payment-button').data('order_id', orderId);
+                    var qrUrl = 'https://quickchart.io/qr?text=upi%3A%2F%2Fpay%3Fpa%3DQ776128644%40ybl%26pn%3DTREATFLIX.COM%26cu%3DINR%26am%3D' + discounted_rate + '&light=ffffff&ecLevel=H&size=300';
+                    $('#payment-image').attr('src', qrUrl);
+                    openModal(orderId);
+                });
+
+                $('#download-button').click(function (event) {
+                    event.preventDefault();
+                    var qrUrl = $('#payment-image').attr('src');
+                    fetch(qrUrl)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            var link = document.createElement('a');
+                            link.href = URL.createObjectURL(blob);
+                            link.download = 'payment-qr-code.jpg';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        })
+                        .catch(error => console.error('Error downloading QR:', error));
+                });
+
+                $('#find-payment-button').click(function (e) {
+                    e.preventDefault();
+                    var paymentMethod = $('input[name="payment_method"]:checked').val();
+                    var discounted_rate = $(this).data('discounted_rate');
+                    var orderDate = $(this).data('order_date');
+                    var orderId = $(this).data('order_id');
+                    if (!discounted_rate || !orderDate || !orderId) {
+                        alert("Please provide both discounted_rate and order date.");
+                        return;
+                    }
+                    displayTypewriterMessage("Finding Payment ...  ");
+                    if (paymentMethod === 'phonepe') {
+                        var txnId = $('#txn_id').val();
+                        if (txnId.length > 21) {
+                            $.ajax({
+                                url: 'backend/find_payment.php', type: 'POST',
+                                data: { txn_id: txnId, discounted_rate: discounted_rate, order_date: orderDate, order_id: orderId },
+                                dataType: 'json',
+                                success: function (response) {
+                                    if (response.success) {
+                                        alert('Success: ' + response.message);
+                                        $('#modal').hide();
+                                        showSection('activeOrder');
+                                        fetchActiveOrders(); fetchOrders();
+                                    } else { alert('Error: ' + response.message); }
+                                },
+                                error: function (xhr, status, error) { alert('AJAX error: ' + error); }
+                            });
+                        } else { alert("Please enter a valid 22-digit TXN ID."); }
+                    } else if (paymentMethod === 'others') {
+                        var upiId = $('#upi_id').val();
+                        if (upiId) {
+                            $.ajax({
+                                url: 'backend/find_payment.php', type: 'POST',
+                                data: { upi_id: upiId, discounted_rate: discounted_rate, order_date: orderDate, order_id: orderId },
+                                dataType: 'json',
+                                success: function (response) {
+                                    if (response.success) {
+                                        alert('Success: ' + response.message);
+                                        $('#modal').hide();
+                                        showSection('activeOrder');
+                                        fetchActiveOrders(); fetchOrders();
+                                    } else { alert('Error: ' + response.message); }
+                                },
+                                error: function (xhr, status, error) { alert('AJAX error: ' + error); }
+                            });
+                        } else { alert("Please enter a valid UPI ID."); }
+                    } else { alert("Please select a payment method."); }
+                });
+
+                function displayTypewriterMessage(message) {
+                    var i = 0;
+                    $('#payment-status-message').html('').show();
+                    function typeWriter() {
+                        if (i < message.length) {
+                            $('#payment-status-message').append(message.charAt(i)); i++;
+                            setTimeout(typeWriter, 50);
+                        }
+                    }
+                    typeWriter();
+                }
+
+                $('.payment-done-btn').click(function (e) {
+                    e.preventDefault();
+                    var orderId = $(this).data('id');
+                    var discounted_rate = $(this).data('discounted_rate');
+                    var orderDate = $(this).data('order_date');
+                    $('#find-payment-button').data('discounted_rate', discounted_rate);
+                    $('#find-payment-button').data('order_date', orderDate);
+                    $('#find-payment-button').data('order_id', orderId);
+                    openModal(orderId);
+                    $('#payment-image-section').hide();
+                    $('#payment-done-button').hide();
+                    $('#payment-form').show();
+                });
+            },
+            error: function () { alert('Failed to fetch orders.'); }
+        });
+    }
+
+    fetchOrders();
+
+    // ============================================================
+    // SECTION 2: Active Orders
+    // ============================================================
+    function fetchActiveOrders() {
+        var userId = $('#user_id').val();
+        $.ajax({
+            url: 'backend/fetch_active_orders.php', type: 'POST',
+            data: { user_id: userId }, dataType: 'json',
+            success: function (response) {
+                if (response.length > 0) {
+                    let output = '<h2>Active Orders</h2><ul>';
+                    response.forEach(order => {
+                        let credHtml = '';
+                        if (order.alloted_mail && typeof order.alloted_mail === 'string' && order.alloted_mail.includes('-')) {
+                            let p = order.alloted_mail.split('-');
+                            credHtml = '<strong>Alloted Email:</strong> '+(p[0]||'N/A')+'<br><strong>Password:</strong> '+(p[1]||'N/A')+'<br><strong>Profile Name:</strong> '+(p[2]||'N/A')+'<br><strong>Profile Pin:</strong> '+(p[3]||'N/A')+'<br>';
+                        } else {
+                            credHtml = '<strong>Alloted Email:</strong> N/A<br><strong>Password:</strong> N/A<br><strong>Profile Name:</strong> N/A<br><strong>Profile Pin:</strong> N/A<br>';
+                        }
+                        output += '<li><strong>Order ID:</strong> '+order.order_id+'<br><strong>Transaction ID:</strong> '+order.txn_id+'<br><strong>Timestamp:</strong> '+order.time_stamp+'<br><strong>Time of Delivery:</strong> '+order.time_of_delivery+'<br><strong>Expiry Time:</strong> '+order.expiry_time+'<br>'+credHtml+'</li>';
+                        if (order.delivery == 0) output += '<button class="claim-btn" data-order-id="'+order.order_id+'">Claim</button>';
+                        if (order.delivery == 1) {
+                            output += '<br>\uD83D\uDD10 <b>Login Instructions (No Password Required)</b><br>';
+                            output += '> <b>Step 1: Mobile Login</b><br>> Open <a href="'+order.ott_site+'" target="_blank">'+order.ott_site+'</a><br>> Enter the <b>allotted email</b><br>> Select <b>"Sign in with Code / Link"</b><br>> Check mail inbox and login<br>> Select profile and enter <b>Profile PIN</b><br>';
+                            output += '<br>\uD83D\uDCFA <b>Step 2: TV Login</b><br>> Open Netflix on TV<br>> Choose <b>"Login using Mobile or Tablet"</b><br>> Scan QR Code on TV using mobile<br>> Confirm login on mobile<br>';
+                            output += '<br>\uD83D\uDCE9 Check Mail Inbox <button class="mail-inbox-btn" data-order-id="'+order.order_id+'">Mail Inbox</button><br>';
+                            output += '> <button class="validity-btn" data-order-id="'+order.order_id+'">Add Validity</button> to Enjoy Longer<br>';
+                            output += '<br>\u26A0\uFE0F <span style="background:Orange;">Too many users? Go to Settings and sign out of other devices.</span>';
+                            output += '<br>\u26A0\uFE0F <span style="background:Orange;">Need OTP? <a href="https://wa.me/917017414946">Contact on WhatsApp</a></span>';
+                        }
+                        if (order.delivery == 2) output += '<span style="background:Red;">Order Expired...</span>';
+                        output += '<hr>';
+                    });
+                    output += '</ul>';
+                    $('#activeOrder').html(output);
+                    $('.claim-btn').click(function () { claimOrder($(this).data('order-id')); });
+                    $('.validity-btn').click(function () { fetchPlanIdAndAddValidity($(this).data('order-id')); });
+                    $('.mail-inbox-btn').click(function () { openMailInboxModal($(this).data('order-id')); });
+                } else {
+                    $('#activeOrder').html('<p>No orders available to claim.</p>');
+                }
+            },
+            error: function () { $('#activeOrder').html('<p>Failed to load active orders.</p>'); }
+        });
+    }
+
+    fetchActiveOrders();
+
+    // ============================================================
+    // SECTION 3: Mail Inbox Modal
+    // ============================================================
+    function openMailInboxModal(orderId) {
+        var userId = $('#user_id').val();
+        $.ajax({
+            url: 'backend/fetch_mails.php', type: 'POST',
+            data: { order_id: orderId, user_id: userId }, dataType: 'html',
+            success: function (response) { $('#mailInboxContent').html(response); $('#mailInboxModal').show(); },
+            error: function () { $('#mailInboxContent').html('<p>Failed to load emails.</p>'); }
+        });
+    }
+    $('#closeMailInboxModal').click(function () { $('#mailInboxModal').hide(); });
+
+    // ============================================================
+    // SECTION 4: Add Validity
+    // ============================================================
+    function fetchPlanIdAndAddValidity(orderId) {
+        $.ajax({
+            url: 'backend/get_plan_id.php', type: 'POST',
+            data: { order_id: orderId }, dataType: 'json',
+            success: function (response) {
+                if (response.success && response.plan_id) {
+                    var userId = $('#user_id').val();
+                    $.ajax({
+                        url: 'backend/save_order.php', type: 'POST',
+                        data: { user_id: userId, plan_id: response.plan_id }, dataType: 'json',
+                        success: function (saveResponse) {
+                            if (saveResponse.success) { alert('Order to Add validity Created!'); fetchOrders(); showSection('orders'); }
+                            else { alert('Failed to add validity.'); }
+                        },
+                        error: function () { alert('Error in saving the validity.'); }
+                    });
+                } else { alert('Failed to fetch the plan ID.'); }
+            },
+            error: function () { alert('Error in fetching the plan ID.'); }
+        });
+    }
+
+    // ============================================================
+    // SECTION 5: Claim Order
+    // ============================================================
+    function claimOrder(orderId) {
+        $.ajax({
+            url: 'backend/claim_order.php', type: 'POST',
+            data: { order_id: orderId },
+            success: function (response) {
+                var data = JSON.parse(response);
+                if (data.success) { alert('Order claimed successfully!'); fetchActiveOrders(); }
+                else { alert(data.message); }
+            },
+            error: function () { alert('Failed to claim the order.'); }
+        });
+    }
+
+    // ============================================================
+    // SECTION 6: Create Order Form
+    // ============================================================
+    $('#orderForm').submit(function (e) {
+        e.preventDefault();
+        var ott_plan_id = $('#ott_name').val();
+        var user_id = $('#user_id').val();
+        var coupon_code = $('#coupon').val();
+        if (ott_plan_id) {
+            $.ajax({
+                url: 'backend/save_order.php', type: 'POST',
+                data: { user_id: user_id, plan_id: ott_plan_id, coupon: coupon_code },
+                success: function (response) {
+                    var res = JSON.parse(response);
+                    if (res.success) { $('#message').html('<p>Order created successfully!</p>'); fetchOrders(); showSection('orders'); }
+                    else { $('#message').html('<p>' + res.message + '</p>'); }
+                },
+                error: function () { $('#message').html('<p>Error creating order. Please try again.</p>'); }
+            });
+        } else { $('#message').html('<p>Please select an OTT plan.</p>'); }
+    });
+
+    // ============================================================
+    // SECTION 7: Modal Controls
+    // ============================================================
+    function openModal(orderId) {
+        $('#modal').show();
+        $('#modal-order-id').text(orderId);
+        $('#payment-form').hide();
+        $('#payment-image-section').show();
+        $('#payment-done-button').show();
+    }
+
+    $('#payment-done-button').click(function () {
+        $('#payment-image-section').hide();
+        $('#payment-done-button').hide();
+        $('#payment-form').show();
+    });
+
+    $('input[name="payment_method"]').change(function () {
+        if ($(this).val() === 'phonepe') { $('#phonepe-txn').show(); $('#upi-id').hide(); }
+        else if ($(this).val() === 'others') { $('#upi-id').show(); $('#phonepe-txn').hide(); }
+    });
+
+    $('#close-modal').click(function () { $('#modal').hide(); });
+
+}); // END document.ready (Sections 1-7)
+
+// ============================================================
+// SECTION 8: OTT Plans Dropdown + Rate Fetcher
+// ============================================================
+$(document).ready(function () {
+    $.ajax({
+        url: 'backend/fetch_ott_plans.php', type: 'GET', dataType: 'json',
+        success: function (data) {
+            var dropdown = $('#ott_name');
+            data.forEach(function (plan) {
+                dropdown.append('<option value="' + plan.plan_id + '">' + plan.ott_plan + '</option>');
+            });
+        }
+    });
+
+    $('#ott_name').change(function () {
+        var plan_id = $(this).val();
+        if (plan_id) {
+            $.ajax({
+                url: 'backend/fetch_rate.php', type: 'POST',
+                data: { plan_id: plan_id }, dataType: 'json',
+                success: function (data) {
+                    $('#rate').val(data.rate);
+                    $('#validity').val(data.validity);
+                    $('#supports').val(data.supports);
+                }
+            });
+        } else { $('#rate').val(''); $('#validity').val(''); $('#supports').val(''); }
+    });
+});
+
+// ============================================================
+// SECTION 9: Tab Navigation
+// ============================================================
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+    document.querySelector('[onclick="showSection(\'' + sectionId + '\')"]').classList.add('active');
+}
+
+window.onload = function () {
+    if (window.innerWidth <= 768) { showSection('activeOrder'); }
+};
+</script>
+
+</body>
+</html>
